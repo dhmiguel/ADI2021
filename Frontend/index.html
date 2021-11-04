@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lyrics Search</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+  </head>
+  <body>
+    <button class="w3-button w3-red w3-display-topright w3-margin" id="favoritos">Favoritos</button>
+    <form id="formLyrics">
+      <label for="Artist">Put artist name:</label><br />
+      <input type="text" id="artist" name="artist" /><br />
+      <label for="Song">Song Name:</label><br />
+      <input type="text" id="song" name="song" />
+    </form>
+    <input type="button" id="buscar" value="Buscar" />
+    <p id="lyric"></p>
+    <input type="button" id="favoritar" value="Favoritar" />
+    
+  </body>
+  <script>
+    var result;
+
+    $("#buscar").click(function () {
+      var nameArtist = $("#artist").val();
+      var nameSong = $("#song").val();
+
+      $.ajax({
+        type: "GET",
+        url: "https://api.lyrics.ovh/v1/" + nameArtist + "/" + nameSong,
+        success: function (data) {
+          result = JSON.stringify(data)
+            .replace(/\\n/g, "<br>")
+            .replace(/\\r/g, "")
+            .replace("{", "")
+            .replace("}", "")
+            .replace(/\"/g, "");
+          result = result.substring(result.indexOf("<br>") - 0);
+          $("#lyric").html(result);
+          $("#lyric").val(result);
+          console.log(data.lyrics);
+        },
+        error: function (data) {
+          console.log(data);
+        },
+      });
+      //console.log(result);
+    });
+
+    $("#favoritar").click(function () {
+      var data = '{"artist":';
+      data += JSON.stringify($("#artist").val());
+      data += ",";
+      data += '"song":';
+      data += JSON.stringify($("#song").val());
+      data += ",";
+      data += '"lyric":';
+      data += JSON.stringify($("#lyric").val());
+      data += "}";
+      console.log(data);
+
+      $.ajax({
+        type: "POST",
+        url: "http://localhost:8088/lyrics/save",
+        data: data,
+        dataType: "JSON",
+        contentType: "application/json; charset=utf-8",
+        success: function (data) {
+          console.log("Sucesso " + data);
+          alert("Lyrics saved successfully");
+        },
+        error: function (data) {
+          console.log("Erro " + data);
+          alert("Lyrics saved failed");
+        },
+      });
+    });
+
+    $("#favoritos").click(function () {
+      window.location.href = "http://localhost/adi/favorites.html";
+    });
+  </script>
+</html>

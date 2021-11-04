@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Favorites</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+  </head>
+  <body>
+    <div id="content">
+       <!-- <div id="id01" class="w3-modal">
+            <div class="w3-modal-content">
+            <div class="w3-container">
+                <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                <p class="lyric"></p>
+            </div>
+            </div>
+        </div>
+        -->
+      </div>
+      
+  </body>
+  <script>
+    $(document).ready(function () {
+      $.ajax({
+        type: "GET",
+        url: "http://localhost:8088/lyrics/all",
+        success: function (data) {
+
+          $.each(data, function (key, value) {
+
+            console.log(value.song)
+            console.log(value.id);
+
+            /*$("#content").append("<button onclick=document.getElementById("+ "'"  + value.id + "'" + ").style.display='block'>"  + value.artist +
+                 " - " + value.song + "</button>" + "<br><br>");
+
+            $("#content").append("<div id='"  + value.id + "'"  + "class='w3-modal'>");
+            $("#content").append("<div class='w3-modal-content'>");
+            $("#content").append("<div class='w3-container'>"); 
+            $("#content").append("<span onclick='document.getElementById("+ "'"  + value.id + "'" + ").style.display='none'" + "class='w3-button w3-display-topright'>&times;</span>");
+            $("#content").append("<p class='lyric'></p>");
+            $(".lyric").text(value.song);
+            $("#content").append("</div></div></div>");
+            //;*/
+
+
+            /*$(".show").click(function () {
+                $("#lyric").toggle(display)
+                //$("#lyric").append(value.lyric);
+                //$("#lyric").toggle();
+                
+            });*/
+          });
+          
+        },
+      });
+
+      
+    });
+
+    
+  </script>
+</html>
