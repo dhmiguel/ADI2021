@@ -1,86 +1,112 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lyrics Search</title>
+    <title>Busca de letras</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-  </head>
-  <body>
-    <button class="w3-button w3-red w3-display-topright w3-margin" id="favoritos">Favoritos</button>
-    <form id="formLyrics">
-      <label for="Artist">Put artist name:</label><br />
-      <input type="text" id="artist" name="artist" /><br />
-      <label for="Song">Song Name:</label><br />
-      <input type="text" id="song" name="song" />
-    </form>
-    <input type="button" id="buscar" value="Buscar" />
-    <p id="lyric"></p>
-    <input type="button" id="favoritar" value="Favoritar" />
-    
-  </body>
-  <script>
-    var result;
+</head>
+<body class="w3-mobile w3-responsive">
+    <header class="w3-center">
+        <h1><b>Busca de letras de músicas internacionais</b></h1>
+    </header>
+    <nav class="w3-bar w3-top">
+        <a class="w3-button w3-red w3-right w3-margin" href="favorites.html">Favoritos</a>
+    </nav>
+    <main class="w3-container">
+        <section>
+            <article class="w3-container w3-col l6 m12">
+                <form class="w3-form" id="formLyrics">
+                    <label class="w3-label" for="Artist">Nome da Artista:</label><br />
+                    <input class="w3-input" type="text" id="artist" name="artist" required /><br />
+                    <label class="w3-label" for="Song">Nome da Música:</label><br />
+                    <input class="w3-input" type="text" id="song" name="song" required />
+                    <br />
+                    <div class="w3-center">
+                        <button class="w3-button w3-black" type="button" id="buscar" value="Buscar">Buscar</button>
+                    </div>
+                </form>
+            </article>
+            <article class="w3-container w3-col l6 m12">
+                <div class="w3-col l6 m6">
+                    <h4><b id="Titulo">Titulo Here</b></h4>
+                    <h6><i id="Artista">Artista Here</i></h6>
+                </div>
+                <div class="w3-col l6 m6">
+                    <button class="w3-button w3-black w3-right" type="button" id="favoritar">Favoritar ⭐</button>
+                </div>
+                <p class="w3-col l12 m12" id="lyric"></p>
+            </article>
+        </section>
+    </main>
+    <footer class="w3-center">
+        <p>Desenvolvido com ❤ pela &copy;<a href="https://ecorycle.azurewebsites.net/">EcoRycle</a></p>
+    </footer>
 
-    $("#buscar").click(function () {
-      var nameArtist = $("#artist").val();
-      var nameSong = $("#song").val();
+    <script>
+        var result;
 
-      $.ajax({
-        type: "GET",
-        url: "https://api.lyrics.ovh/v1/" + nameArtist + "/" + nameSong,
-        success: function (data) {
-          result = JSON.stringify(data)
-            .replace(/\\n/g, "<br>")
-            .replace(/\\r/g, "")
-            .replace("{", "")
-            .replace("}", "")
-            .replace(/\"/g, "");
-          result = result.substring(result.indexOf("<br>") - 0);
-          $("#lyric").html(result);
-          $("#lyric").val(result);
-          console.log(data.lyrics);
-        },
-        error: function (data) {
-          console.log(data);
-        },
-      });
-      //console.log(result);
-    });
+        $("#buscar").click(function () {
+            var nameArtist = $("#artist").val();
+            var nameSong = $("#song").val();
 
-    $("#favoritar").click(function () {
-      var data = '{"artist":';
-      data += JSON.stringify($("#artist").val());
-      data += ",";
-      data += '"song":';
-      data += JSON.stringify($("#song").val());
-      data += ",";
-      data += '"lyric":';
-      data += JSON.stringify($("#lyric").val());
-      data += "}";
-      console.log(data);
+            $.ajax({
+                type: "GET",
+                url: "https://api.lyrics.ovh/v1/" + nameArtist + "/" + nameSong,
+                success: function (data) {
+                    result = JSON.stringify(data)
+                        .replace(/\\n/g, "<br>")
+                        .replace(/\\r/g, "")
+                        .replace("{", "")
+                        .replace("}", "")
+                        .replace(/\"/g, "");
 
-      $.ajax({
-        type: "POST",
-        url: "http://localhost:8088/lyrics/save",
-        data: data,
-        dataType: "JSON",
-        contentType: "application/json; charset=utf-8",
-        success: function (data) {
-          console.log("Sucesso " + data);
-          alert("Lyrics saved successfully");
-        },
-        error: function (data) {
-          console.log("Erro " + data);
-          alert("Lyrics saved failed");
-        },
-      });
-    });
+                    result = result.substring(result.indexOf("<br>") - 0);
+                    $("#lyric").html(result);
+                    $("#lyric").val(result);
 
-    $("#favoritos").click(function () {
-      window.location.href = "http://localhost/adi/favorites.html";
-    });
-  </script>
+                    $("#Titulo").html(nameSong.toUpperCase());
+                    $("#Artista").html(nameArtist.toUpperCase());
+
+                    console.log(result);
+                },
+                error: function (data) {
+                    alert(data);
+                },
+            });
+            //console.log(result);
+        });
+
+        $("#favoritar").click(function () {
+            var data = '{"artist":';
+            data += JSON.stringify($("#artist").val());
+            data += ",";
+            data += '"song":';
+            data += JSON.stringify($("#song").val());
+            data += ",";
+            data += '"lyric":';
+            data += JSON.stringify($("#lyric").val());
+            data += "}";
+            console.log(data);
+
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:4545/lyrics/save",
+                data: data,
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log("Sucesso " + data);
+                    alert("Letra salva com sucesso!");
+                },
+                error: function (data) {
+                    console.log("Erro " + data);
+                    alert("Erro ao salvar!");
+                },
+            });
+        });
+    </script>
+</body>
 </html>

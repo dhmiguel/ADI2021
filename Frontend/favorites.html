@@ -1,66 +1,122 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Favorites</title>
+    <title>Músicas Favoritas</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-  </head>
-  <body>
-    <div id="content">
-       <!-- <div id="id01" class="w3-modal">
-            <div class="w3-modal-content">
-            <div class="w3-container">
-                <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-                <p class="lyric"></p>
-            </div>
-            </div>
-        </div>
-        -->
-      </div>
-      
-  </body>
-  <script>
-    $(document).ready(function () {
-      $.ajax({
-        type: "GET",
-        url: "http://localhost:8088/lyrics/all",
-        success: function (data) {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+</head>
+<body class="w3-responsive w3-mobile">
+    <header class="w3-center">
+        <h1><b>Letras Salvas</b></h1>
+    </header>
+    <nav class="w3-bar w3-top">
+        <a class="w3-button w3-red w3-right w3-margin" href="index.html">Novas buscas</a>
+    </nav>
+    <main class="w3-container">
+        <section id="sessao">
+        </section>
+    </main>
+    <footer class="w3-center">
+        <p>Desenvolvido com ❤ pela &copy;<a href="https://ecorycle.azurewebsites.net/">EcoRycle</a></p>
+    </footer>
 
-          $.each(data, function (key, value) {
-
-            console.log(value.song)
-            console.log(value.id);
-
-            /*$("#content").append("<button onclick=document.getElementById("+ "'"  + value.id + "'" + ").style.display='block'>"  + value.artist +
-                 " - " + value.song + "</button>" + "<br><br>");
-
-            $("#content").append("<div id='"  + value.id + "'"  + "class='w3-modal'>");
-            $("#content").append("<div class='w3-modal-content'>");
-            $("#content").append("<div class='w3-container'>"); 
-            $("#content").append("<span onclick='document.getElementById("+ "'"  + value.id + "'" + ").style.display='none'" + "class='w3-button w3-display-topright'>&times;</span>");
-            $("#content").append("<p class='lyric'></p>");
-            $(".lyric").text(value.song);
-            $("#content").append("</div></div></div>");
-            //;*/
+    <script type="text/javascript">
+        function ExibirPopup(valor) {
+            var html = document.createElement("div");
+            html.id = valor.id;
+            html.innerHTML = "<h5><b>" + valor.song.toUpperCase() + "</b> - <i>" + valor.artist.toUpperCase() + "</i> </h5>";
+            html.innerHTML += "<p>" + valor.lyric + "</p>";
+            console.log(html);
 
 
-            /*$(".show").click(function () {
-                $("#lyric").toggle(display)
-                //$("#lyric").append(value.lyric);
-                //$("#lyric").toggle();
-                
-            });*/
-          });
-          
-        },
-      });
+            $(html).appendTo('body').dialog(
+                {
+                    modal: true,
+                    resizable: false,
+                    height: "auto",
+                    maxWidth: 2000,
+                    minWidth: 500,
+                    title: valor.song.toUpperCase() + " - " + valor.artist.toUpperCase(),
+                    autoOpen: true
+                }
+            );
+        }
 
-      
-    });
+        function Deletar(valor) {
+            $.ajax({
+                type: "DELETE",
+                url: "http://localhost:4545/lyrics/remove/" + valor.id,
+            })
+                .done(function (data) {
+                    console.log(data);
+                    alert("A letra de " + valor.song.toUpperCase() + " foi removida!");
+                    location.reload();
+                })
+                .fail(function (texto, status, x) {
+                    console.error(status + "\n" + texto + "\n" + x);
+                    console.log(texto);
+                });
+        }
 
-    
-  </script>
+        function CarregarLista() {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:4545/lyrics/all",
+                dataType: "json",
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        var artigo = document.createElement("article");
+                        var header = document.createElement("header");
+                        var divEsq = document.createElement("div");
+                        var divDir = document.createElement("div");
+
+                        var btnE = document.createElement("button");
+                        btnE.className = "w3-button w3-black";
+                        btnE.innerHTML = "Ver letra";
+                        btnE.onclick = function () {
+                            ExibirPopup(value);
+                        };
+
+                        var btnR = document.createElement("button");
+                        btnR.className = "w3-button w3-red";
+                        btnR.innerHTML = "Remover";
+                        btnR.onclick = function () {
+                            Deletar(value);
+                        };;
+
+                        artigo.className = "w3-container w3-card-4 w3-col m4 l4";
+
+                        header.className = "w3-container";
+                        header.innerHTML = "<h5><b>" + value.song.toUpperCase() + "</b></h5>";
+                        header.innerHTML += "<h6><i>" + value.artist.toUpperCase() + "</i></h6>";
+                        artigo.appendChild(header);
+
+                        divEsq.className = "w3-center w3-col l6 m6"
+                        divEsq.appendChild(btnE);
+
+                        divDir.className += "w3-center w3-col l6 m6";
+                        divDir.appendChild(btnR);
+
+                        artigo.appendChild(divEsq);
+                        artigo.appendChild(divDir);
+
+                        $(artigo).appendTo("#sessao");
+                        console.log(value)
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            CarregarLista();
+        });
+    </script>
+</body>
 </html>

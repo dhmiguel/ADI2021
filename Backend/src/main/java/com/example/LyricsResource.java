@@ -1,6 +1,7 @@
 package com.example;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -46,11 +47,17 @@ public class LyricsResource {
 	public Response remove (@PathParam("id") int id) {
 		
 		try {
-			lyrics.remove(id);
+			
+			Lyrics Deletar = lyrics.stream().filter(i->i.getId() == id).findFirst().get();
+			
+			lyrics.remove(Deletar);
+		    
 			return Response.status(Response.Status.OK).build();
+			
 		}
 		catch(Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+			//return new Lyrics();
 		}
 	}
 	
